@@ -202,9 +202,9 @@ describe("03-functions", function() {
 
     //assert(printValue(o)===1);
     assert(printValue.call(o)===1);
-    //assert(printValue.apply(o)===1);
+    assert(printValue.apply(o)===1);
     //assert(printValue.call(null, [o])===1);
-    //assert(printValue.bind(o)===1);
+    assert(printValue.bind(o)===1);
     //assert(printValue.bind(o)()===1);
   });
   it("15. prefix a sufix", function() {
