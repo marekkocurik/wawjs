@@ -1,48 +1,39 @@
 const assert = require("assert");
+const crypto = require("crypto");
+const fs = require("fs");
 
-describe("cvicenie04 - Object properties concepts", function() {
+describe("cvicenie10", function() {
 
-  const {
-    allOwnKeys,
-    allOwnValues,
-    allOwnEntries,
-    getProtoChain,
-    allKeys,
-    forIn,
-    shallowClone,
-    hasInheritedProperty,
-    hasOverridenProperty
-  } = require("../src/introspect.js");
+  const myClient = require("../src/zip-client.js");
+  const myServer = require("../src/zip-server.js");
 
-  describe("Object.keys", function() {
+  describe("Invalid file", function() {
 
-    it("allOwnKeys() works for Strings and Symbols", function() {
-      let o = { a: 10 };
-      let s = Symbol();
-      o[s] = 20;
-
-      assert(Object.keys(o), ["a"],
-        "Object.keys() does not return Symbols");
-
-
-      assert.deepStrictEqual(allOwnKeys(o), ['a', s],
-        "allOwnKeys returns also symbols");
+    it("Path to file must exist", function() {
+      assert(myClient("asdsads"), "Path does not exist");
     });
 
-    it("allOwnKeys() works for non enumerable as well", function() {
-      let o = { a: 10 };
-      Object.defineProperty(o, 'b', {
-        value: 20,
-        enumerable: false
-      });
-
-      assert(Object.keys(o), ["a"],
-        "Object.keys() does not return non enumerable props");
-
-
-      assert.deepStrictEqual(allOwnKeys(o), ['a', 'b'],
-        "allOwnKeys returns also non enumerable");
+    it("Path needs to be include file, not just directory", function() {
+      assert(myClient("C:/Users/Marek/Desktop", "Not a file"));
     });
+
+  });
+
+  describe("Created files are correct", function() {
+    const files = ["file.txt", "mojText.txt", "frog.jpg"];
+    const path = "C:/Users/Marek/Desktop/serverFiles";
+
+    it("Files are correctly saved", function() {
+      files.forEach((fileName) => {
+        let fileC = fs.readFileSync(`${__dirname}/${fileName}`);
+        let fileS = fs.readFileSync(`${path}/${fileName}`);
+
+        let h1 = crypto.createHash('sha1').update(fileC).digest().toString();
+        let h2 = crypto.createHash('sha1').update(fileS).digest().toString();
+
+        assert(h1 == h2);
+      })
+    })
   });
 
 });

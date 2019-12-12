@@ -4,16 +4,16 @@ let path = require("path");
 let { pipeline } = require("stream");
 
 module.exports = myClient;
-// let myClient = (file) => {
+
 function myClient(file) {
   let url = "http://localhost:9999";
 
   if(!fs.existsSync(file)) {
-    console.log("Path does not exist");
-    return;
+    // console.log("Path does not exist");
+    return "Path does not exist";
   } else if(!fs.lstatSync(file).isFile()) {
-    console.log("Not a file");
-    return;
+    // console.log("Not a file");
+    return "Not a file";
   }
 
   let fileName = path.basename(file);
@@ -35,9 +35,12 @@ function myClient(file) {
     pipeline(res, output, err => {
       if(err) {
         console.log("Error: failed to pipe res on output; ", err);
+        fs.unlinkSync(`${fileName}.gz`);
       }
     })
   });
 
   return request;
 }
+
+myClient(process.argv[2]);
